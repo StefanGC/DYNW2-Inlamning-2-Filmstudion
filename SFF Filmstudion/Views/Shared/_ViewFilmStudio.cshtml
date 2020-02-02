@@ -1,0 +1,34 @@
+﻿<form action="javascript:void(0);" method="POST" onsubmit="addItem()">
+    <input type="text" id="add-name">
+    <input type="submit" value="Lägga till">
+</form>
+
+<div id="editForm" style="display:none">
+    <h3>Ändra</h3>
+    <form action="javascript:void(0);" onsubmit="updateItem()">
+        <input type="hidden" id="edit-id">
+        <input type="text" id="edit-name">
+        <input type="text" id="edit-city">
+        <input type="submit" value="Spara">
+        <a onclick="closeInput()" aria-label="Close">&#10006;</a>
+    </form>
+</div>
+
+<div class="table-responsive" style="margin-top: 20px">
+    <table class="table table-hover text-center">
+        <tr class="text-primary">
+            <th width="17%">Id</th>
+            <th width="17%">Namn</th>
+            <th width="17%">Ort</th>
+            <th width="17%">Filmer</th>
+            <th width="17%"></th>
+            <th width="17%"></th>
+        </tr>
+        <tbody id="todos"></tbody>
+    </table>
+</div>
+
+<script src="~/js/Filmstudio.js" asp-append-version="true"></script>
+<script type="text/javascript">
+    getItems();
+</script>
