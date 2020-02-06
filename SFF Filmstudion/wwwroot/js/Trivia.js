@@ -1,8 +1,8 @@
-﻿const uri = 'http://localhost:5001/api/Trivias';
+﻿const uriTrivia = 'http://localhost:5001/api/Trivias';
 let todos = [];
 
 function getItems() {
-    fetch(uri)
+    fetch(uriTrivia)
         .then(response => response.json())
         .then(data => _displayItems(data))
         .catch(error => console.error('Unable to get items.', error));
@@ -18,7 +18,7 @@ function addItem() {
         filmId: 0
     };
 
-    fetch(uri, {
+    fetch(uriTrivia, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -35,7 +35,7 @@ function addItem() {
 }
 
 function deleteItem(id) {
-    fetch(`${uri}/${id}`, {
+    fetch(`${uriTrivia}/${id}`, {
         method: 'DELETE'
     })
         .then(() => getItems())
@@ -63,7 +63,7 @@ function updateItem() {
         filmId: parseInt(document.getElementById('edit-filmId').value.trim())
     };
 
-    fetch(`${uri}/${itemId}`, {
+    fetch(`${uriTrivia}/${itemId}`, {
         method: 'PUT',
         headers: {
             'Accept': 'application/json',
@@ -99,11 +99,11 @@ function _displayItems(data) {
 
     data.forEach(item => {
         let editButton = button.cloneNode(false);
-        editButton.innerText = 'Edit';
+        editButton.innerText = 'Redigera';
         editButton.setAttribute('onclick', `displayEditForm(${item.id})`);
 
         let deleteButton = button.cloneNode(false);
-        deleteButton.innerText = 'Delete';
+        deleteButton.innerText = 'Ta bort';
         deleteButton.setAttribute('onclick', `deleteItem(${item.id})`);
 
         let tr = tBody.insertRow();

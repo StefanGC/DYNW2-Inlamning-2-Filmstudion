@@ -1,8 +1,12 @@
-﻿const uri = 'http://localhost:5001/api/Filmstudios';
+﻿const uriFilm = 'http://localhost:5001/api/Films';
+const uriFilmstudio = 'http://localhost:5001/api/Filmstudios';
+const uriLoan = 'http://localhost:5001/api/Loans';
 let todos = [];
+let ids = [];
+
 
 function getItems() {
-    fetch(uri)
+    fetch(uriFilmstudio)
         .then(response => response.json())
         .then(data => _displayItems(data))
         .catch(error => console.error('Unable to get items.', error));
@@ -14,10 +18,11 @@ function addItem() {
 
     const item = {
         name: addNameTextbox.value.trim(),
-        city: "Helsingborg"
+        city: "Helsingborg",
+        films: "Inga filmer"
     };
 
-    fetch(uri, {
+    fetch(uriFilmstudio, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -34,7 +39,7 @@ function addItem() {
 }
 
 function deleteItem(id) {
-    fetch(`${uri}/${id}`, {
+    fetch(`${uriFilmstudio}/${id}`, {
         method: 'DELETE'
     })
         .then(() => getItems())
@@ -49,6 +54,17 @@ function displayEditForm(id) {
     document.getElementById('edit-id').value = item.id;
     document.getElementById('edit-city').value = item.city;
     document.getElementById('editForm').style.display = 'block';
+
+    fetch("http://localhost:5001/api/Films")
+        .then(response => response.json())
+        .then(function (jsonResult) {
+            let idSelect = "<option value=\"0\" disabled>Välj en film</option>"
+            for (let i = 0; i < jsonResult.length; i++) {
+                idSelect += "<option value=\"" + jsonResult[i].name + "\">" + jsonResult[i].name + "</option>";
+            }
+            document.getElementById('edit-films').innerHTML = idSelect;
+        })
+        .catch(err => console.log(JSON.stringify(err))); 
 }
 
 //TODO
@@ -57,10 +73,16 @@ function updateItem() {
     const item = {
         id: parseInt(itemId, 10),
         name: document.getElementById('edit-name').value.trim(),
-        city: document.getElementById('edit-city').value.trim()
+        city: document.getElementById('edit-city').value.trim(),
+        films: document.getElementById('edit-films').value.trim()
     };
 
-    fetch(`${uri}/${itemId}`, {
+    const item2 = {
+        FilmId: 1,
+        FilmStudioId: parseInt(itemId, 10)
+    }
+
+    fetch(`${uriFilmstudio}/${itemId}`, {
         method: 'PUT',
         headers: {
             'Accept': 'application/json',
@@ -70,6 +92,22 @@ function updateItem() {
     })
         .then(() => getItems())
         .catch(error => console.error('Unable to update item.', error));
+
+    //Use to Loans
+    fetch(uriLoan, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(item2)
+    })
+        .then(response => response.json())
+        .then(() => {
+            getItems();
+            addNameTextbox.value = '';
+        })
+        .catch(error => console.error('Unable to add item.', error));
 
     closeInput();
 
@@ -87,7 +125,7 @@ function _displayCount(itemCount) {
 }
 
 function _displayItems(data) {
-    const tBody = document.getElementById('todos');
+    let tBody = document.getElementById('todos');
     tBody.innerHTML = '';
 
     //_displayCount(data.length);
@@ -95,12 +133,13 @@ function _displayItems(data) {
     const button = document.createElement('button');
 
     data.forEach(item => {
+        ids.push(item.id);
         let editButton = button.cloneNode(false);
-        editButton.innerText = 'Edit';
+        editButton.innerText = 'Redigera';
         editButton.setAttribute('onclick', `displayEditForm(${item.id})`);
 
         let deleteButton = button.cloneNode(false);
-        deleteButton.innerText = 'Delete';
+        deleteButton.innerText = 'Ta bort';
         deleteButton.setAttribute('onclick', `deleteItem(${item.id})`);
 
         let tr = tBody.insertRow();
@@ -120,7 +159,7 @@ function _displayItems(data) {
         let td4 = tr.insertCell(3);
         let textNode4 = document.createTextNode(item.films);
         td4.appendChild(textNode4);
-
+            
         let td5 = tr.insertCell(4);
         td5.appendChild(editButton);
 
@@ -129,4 +168,30 @@ function _displayItems(data) {
     });
 
     todos = data;
+    //getFilms();
+}
+
+function getFilms() {
+    let myFilms = "";
+    fetch(uriLoan)
+        .then(response => response.json())
+        .then(function (jsonResult) {
+            for (let i = 0; i < jsonResult.length; i++) {
+                if (jsonResult[i].filmStudioId == ids[0])
+                    if (myFilms == "")
+                        myFilms = getFilmName(1);
+                    else
+                        myFilms += ", " + jsonResult[i].name;
+            }
+        })
+        .catch(error => console.error('Unable to add item.', error));
+}
+
+function getFilmName(filmId) {
+    fetch(`${uriFilm}/${filmId}`)
+        .then(response => response.json())
+        .then(function (jsonResult) {
+            return jsonResult.name;
+        })
+        .catch(error => console.error('Unable to get items.', error));
 }

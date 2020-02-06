@@ -7,8 +7,9 @@ namespace SFF_Filmstudion.Models
 {
     public class Loan
     {
-        public int Id { get; set; }
         public int FilmId { get; set; }
+        public Film Film { get; set; }
         public int FilmStudioId { get; set; }
+        public Filmstudio Filmstudio { get; set; }
     }
 }

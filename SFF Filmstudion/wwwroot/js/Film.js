@@ -1,8 +1,8 @@
-﻿const uri = 'http://localhost:5001/api/Films';
+﻿const uriFilm = 'http://localhost:5001/api/Films';
 let todos = [];
 
 function getItems() {
-    fetch(uri)
+    fetch(uriFilm)
         .then(response => response.json())
         .then(data => _displayItems(data))
         .catch(error => console.error('Unable to get items.', error));
@@ -18,7 +18,7 @@ function addItem() {
         numberOfLoans: 0
     };
 
-    fetch(uri, {
+    fetch(uriFilm, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -35,7 +35,7 @@ function addItem() {
 }
 
 function deleteItem(id) {
-    fetch(`${uri}/${id}`, {
+    fetch(`${uriFilm}/${id}`, {
         method: 'DELETE'
     })
         .then(() => getItems())
@@ -63,7 +63,7 @@ function updateItem() {
         numberOfLoans: parseInt(document.getElementById('edit-numberOfLoans').value.trim())
     };
 
-    fetch(`${uri}/${itemId}`, {
+    fetch(`${uriFilm}/${itemId}`, {
         method: 'PUT',
         headers: {
             'Accept': 'application/json',
@@ -99,11 +99,11 @@ function _displayItems(data) {
 
     data.forEach(item => {
         let editButton = button.cloneNode(false);
-        editButton.innerText = 'Edit';
+        editButton.innerText = 'Redigera';
         editButton.setAttribute('onclick', `displayEditForm(${item.id})`);
 
         let deleteButton = button.cloneNode(false);
-        deleteButton.innerText = 'Delete';
+        deleteButton.innerText = 'Ta bort';
         deleteButton.setAttribute('onclick', `deleteItem(${item.id})`);
 
         let tr = tBody.insertRow();
